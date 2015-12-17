@@ -4,7 +4,9 @@
   {registered, []},
   {mod, {'talks_tweeter_app', []}},
   {applications,
-   [kernel,
+   [ssl,
+    etweet,
+    kernel,
     stdlib
    ]},
   {env,[]},
