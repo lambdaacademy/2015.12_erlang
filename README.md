@@ -22,9 +22,35 @@ make compile
 make shell
 ```
 
+> The config/sys.config file has to be filled with appropriate values.
+
 ## API ##
 
-### Importing Talks ###
+### Architecture ###
+
+![architecture](https://docs.google.com/drawings/d/1Tg9J9MGxVXwA0_3NdQ4FWo9yQ3XYL78aljEgNRK3Yu4/pub?w=960&h=720)
+
+### Talks Importer ###
+
+```erlang
+tt_importer:start_link() -> Result.
+
+tt_importer:import_file(Filename) -> ok.
+tt_importer:import_file("priv/talks") -> ok.
+
+```
+
+The `tt_importer` should be implemented as a `gen_server` plugged into the application supervision tree. The `tt_importer:import_file/1` function takes a file name as an argument and import its content into the database using its API (`tt_store:add/4`).
+
+The file with the talks should have the following format:
+```erlang
+[
+  {"School of Erlang", {{2015,12,15}, {10,00,00}}, {{2015,12,15}, {11,00,00}}, "ESL Office"},
+  {"School of Elixir", {{2015,12,15}, {11,00,00}}, {{2015,12,15}, {12,00,00}}, "ESL Office"}
+]
+```
+
+### Talks Database ###
 
 ```erlang
 tt_store:start_link() -> Result.
@@ -52,7 +78,7 @@ tt_scheduler:schedule({{2015, 12, 17}, {15, 00, 00}}, {{2015, 12, 17}, {20, 00, 
 tt_scheduler:cancel_schedule(Ref) -> ok.
 ```
 
-The `tt_scheduler` should be a `gen_server` pluggined into the application supervision tree. It is intended for setting up scheduling of publishing information on talks. For example calling `tt_scheduler:schedule({{2015, 12, 17}, {15, 00, 00}}, {{2015, 12, 17}, {20, 00, 00}}, {00,20,00}).` should start a process that will check every hour what are the planned talks for the next hour and pass the resul to the `tt_publisher`.
+The `tt_scheduler` should be a `gen_server` plugged into the application supervision tree. It is intended for setting up scheduling of publishing information on talks. For example calling `tt_scheduler:schedule({{2015, 12, 17}, {15, 00, 00}}, {{2015, 12, 17}, {20, 00, 00}}, {00,20,00}).` should start a process that will check every hour what are the planned talks for the next hour and pass the result to the `tt_publisher`.
 
 ### Publisher ###
 
@@ -67,13 +93,13 @@ tt_publisher:publish([
                      ) -> ok.
 ```
 
-`tt_publisher:publish/1` should publish on Twitter the talks. So the example invocation above should result in something like follwoing in the Twitter account:
+`tt_publisher:publish/1` should publish on Twitter the talks. So the example invocation above should result in something like following in the Twitter account:
 
-> The paln for the follwing hour is:
+> The plan for the following hour is:
 > * 17:00 - 17:30 "School of Erlang", ESL Office
 > * 17:30 - 18:00 "School of Elixir", ESL Office
 
-`tt_publisher` should run as a gen_server and be plugged into the application supervision tree.
+`tt_publisher` should run as a `gen_server` and be plugged into the application supervision tree.
 
 ## References ##
 
