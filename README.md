@@ -1,5 +1,22 @@
 # talks_tweeter #
 
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
+**Table of Contents**
+
+- [talks_tweeter](#talkstweeter)
+    - [Configuring](#configuring)
+    - [Building and Running](#building-and-running)
+    - [API](#api)
+        - [Architecture](#architecture)
+        - [Talks Importer](#talks-importer)
+        - [Talks Database](#talks-database)
+        - [Scheduling Publishing Talks](#scheduling-publishing-talks)
+        - [Publisher](#publisher)
+    - [References](#references)
+
+<!-- markdown-toc end -->
+
+
 ## Configuring ##
 
 Create the `config/sys.config` file with the following content:
