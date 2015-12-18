@@ -28,7 +28,14 @@ start_link() ->
 
 %% Child :: {Id,StartFunc,Restart,Shutdown,Type,Modules}
 init([]) ->
-    {ok, { {one_for_all, 0, 1}, []} }.
+    InitLogLevel = application:get_env(talks_tweeter, log_level, info),
+    LogerWorker = #{id => tt_loger,
+                    start => {tt_loger, start_link, [InitLogLevel]},
+                    restart => permanent,
+                    type => worker,
+                    modules => [tt_loger]
+                   },
+    {ok, { {one_for_one, 5, 10}, [LogerWorker]} }.
 
 %%====================================================================
 %% Internal functions
