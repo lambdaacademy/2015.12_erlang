@@ -41,11 +41,11 @@ make shell
 
 > The config/sys.config file has to be filled with appropriate values.
 
-## API ##
-
-### Architecture ###
+## Architecture ##
 
 ![architecture](https://docs.google.com/drawings/d/1Tg9J9MGxVXwA0_3NdQ4FWo9yQ3XYL78aljEgNRK3Yu4/pub?w=960&h=720)
+
+## API ##
 
 ### Talks Importer ###
 
