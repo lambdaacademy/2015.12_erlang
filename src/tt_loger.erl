@@ -22,7 +22,7 @@
 start_link(InitLogLevel) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [InitLogLevel], []).
 
--spec log(Level :: atom(), Messsag :: list()) -> ok.
+-spec log(Level :: atom(), Message :: list()) -> ok.
 log(Level, Message) ->
     gen_server:cast(?SERVER, {log, Level, Message}).
 

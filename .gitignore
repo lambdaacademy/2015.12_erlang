@@ -18,3 +18,9 @@ _tdeps
 logs
 _build
 config/sys.config.private
+rebar3
+rebar.lock
+
+# intellij files
+.idea
+*.iml
