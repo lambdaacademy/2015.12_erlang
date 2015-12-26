@@ -13,7 +13,7 @@
 
 -define(SERVER, ?MODULE).
 
--record(state, {level :: atom}).
+-record(state, {level :: atom()}).
 
 %%%===================================================================
 %%% API

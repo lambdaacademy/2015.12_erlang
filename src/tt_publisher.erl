@@ -4,7 +4,7 @@
 
 -record(talk, {title :: string(), start_time :: calendar:datetime(), end_time :: calendar:datetime(), location :: string()}).
 
--spec(publish(#talk{}) -> no_return()).
+-spec(publish([#talk{}]) -> no_return()).
 publish(Talks) ->
   lists:foreach(fun(Talk) -> io:format("~s, ~s, ~s, ~s~n", [Talk#talk.title, datetime_to_string(Talk#talk.start_time), datetime_to_string(Talk#talk.end_time), Talk#talk.location]) end, Talks).
 

@@ -9,6 +9,9 @@ upgrade:
 clean:
 	./rebar3 clean
 
+dialyzer:
+	./rebar3 dialyzer
+
 shell:
 	erl -pa _build/default/lib/*/ebin \
 	-config config/sys \
