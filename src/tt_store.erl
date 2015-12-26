@@ -1,5 +1,7 @@
 -module(tt_store).
 
+-record(talk, {title :: string(), start_time :: calendar:datetime(), end_time :: calendar:datetime(), location :: string()}).
+
 -behaviour(gen_server).
 
 %% API
@@ -14,8 +16,6 @@
 
 -define(SERVER, ?MODULE).
 
-% -record(state, {level :: atom}).
-
 %%%===================================================================
 %%% API
 %%%===================================================================
@@ -23,16 +23,16 @@
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
-% -spec add(Title :: atom(), StartTime :: atom(), EndTime :: atom()) -> ok.
+-spec(add(Title :: string, StartTime :: calendar:datetime(), EndTime :: calendar:datetime()) -> ok).
 add(Title, StartTime, EndTime) ->
     gen_server:call(?SERVER, {add, Title, StartTime, EndTime}).
 
-% -spec find_by_time(StartTime :: atom(), EndTime :: atom()) -> ok.
+-spec(find_by_time(StartTime :: calendar:datetime(), EndTime :: calendar:datetime()) -> [#talk{}]).
 find_by_time(StartTime, EndTime) ->
     gen_server:call(?SERVER, {log, StartTime, EndTime}).
 
 list() ->
-    gen_server:call(?SERVER, list).
+    gen_server:call(?SERVER, {list}).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -42,14 +42,14 @@ init(_) ->
     {ok, []}.
 
 
-handle_call(list, _From, State) ->
+handle_call({list}, _From, State) ->
     {reply, ok};
 handle_call({add, Title, StartTime, EndTime}, _From, State) ->
     {reply, ok};
 handle_call({log, StartTime, EndTime}, _From, State) ->
     {reply, ok, []};
 handle_call(_Request, _From, State) ->
-    {reply, unknown_operation, State}.
+    {reply, unknown_log_level, State}.
 
 handle_cast(_Request, State) ->
     {noreply, State}.
