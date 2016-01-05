@@ -36,6 +36,7 @@ Create the `config/sys.config` file with the following content:
 
 ```bash
 make compile
+make test
 make shell
 ```
 
