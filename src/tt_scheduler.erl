@@ -45,31 +45,22 @@ cancel_schedule(Ref) ->
 %%% gen_server callbacks
 %%%===================================================================
 
--spec(init(Args :: term()) ->
-  {ok, State :: #state{}} | {ok, State :: #state{}, timeout() | hibernate} |
-  {stop, Reason :: term()} | ignore).
+-spec init([]) -> {ok, State :: #state{}}.
 init([]) ->
   process_flag(trap_exit, true),
   {ok, #state{refs = maps:new()}}.
 
--spec(handle_call(Request :: term(), From :: {pid(), Tag :: term()},
-    State :: #state{}) ->
-  {reply, Reply :: term(), NewState :: #state{}} |
-  {reply, Reply :: term(), NewState :: #state{}, timeout() | hibernate} |
-  {noreply, NewState :: #state{}} |
-  {noreply, NewState :: #state{}, timeout() | hibernate} |
-  {stop, Reason :: term(), Reply :: term(), NewState :: #state{}} |
-  {stop, Reason :: term(), NewState :: #state{}}).
+-spec handle_call({schedule, StartTime :: calendar:datetime(), EndTime :: calendar:datetime(), PublishInterval :: calendar:time()},
+    From :: {pid(), Tag :: term()}, State :: #state{}) ->
+  {reply, reference(), NewState :: #state{}}.
 handle_call({schedule, StartTime, EndTime, PublishInterval}, _From, State) ->
   {Ref, NewState} = do_schedule(StartTime, EndTime, PublishInterval, State),
   {reply, Ref, NewState};
 handle_call(_Request, _From, State) ->
   {reply, ok, State}.
 
--spec(handle_cast(Request :: term(), State :: #state{}) ->
-  {noreply, NewState :: #state{}} |
-  {noreply, NewState :: #state{}, timeout() | hibernate} |
-  {stop, Reason :: term(), NewState :: #state{}}).
+-spec handle_cast({publish, calendar:time()} | {cancel_schedule, reference()}, State :: #state{}) ->
+  {noreply, NewState :: #state{}}.
 handle_cast({publish, PublishInterval}, State) ->
   do_publish(PublishInterval),
   {noreply, State};
@@ -79,10 +70,8 @@ handle_cast({cancel_schedule, Ref}, State) ->
 handle_cast(_Request, State) ->
   {noreply, State}.
 
--spec(handle_info(Info :: timeout() | term(), State :: #state{}) ->
-  {noreply, NewState :: #state{}} |
-  {noreply, NewState :: #state{}, timeout() | hibernate} |
-  {stop, Reason :: term(), NewState :: #state{}}).
+-spec handle_info({'EXIT', _, {time_keeper_cancelled | time_keeper_finished, reference()}}, State :: #state{}) ->
+  {noreply, NewState :: #state{}}.
 handle_info({'EXIT', _, {time_keeper_cancelled, Ref}}, State) ->
   {noreply, State#state{refs = maps:remove(Ref, State#state.refs)}};
 handle_info({'EXIT', _, {time_keeper_finished, Ref}}, State) ->
@@ -132,11 +121,7 @@ add_time(T1, T2) ->
 -spec(time_keeper_function(calendar:datetime(), calendar:datetime(), calendar:time(), reference()) -> no_return()).
 time_keeper_function(StartTime, EndTime, PublishInterval, Ref) ->
   TimeToSleep = timer:seconds(calendar:datetime_to_gregorian_seconds(StartTime) - calendar:datetime_to_gregorian_seconds(calendar:local_time())),
-  try
-    timer:sleep(TimeToSleep)
-  catch
-      _ -> ok
-  end,
+  timer:sleep(TimeToSleep),
 
   TimeToRun = timer:seconds(calendar:datetime_to_gregorian_seconds(EndTime) - calendar:datetime_to_gregorian_seconds(calendar:local_time())),
   case timer:exit_after(TimeToRun, {time_keeper_finished, Ref}) of
