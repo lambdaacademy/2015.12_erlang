@@ -1,4 +1,4 @@
-.PHONY: compile clean dev upgrade
+.PHONY: compile clean dev upgrade dialyzer test
 
 compile:
 	./rebar3 compile
@@ -8,6 +8,12 @@ upgrade:
 
 clean:
 	./rebar3 clean
+
+dialyzer:
+	./rebar3 dialyzer
+
+test:
+	./rebar3 proper
 
 shell:
 	erl -pa _build/default/lib/*/ebin \

@@ -1,0 +1,9 @@
+[{<<"etweet">>,
+  {git,"https://github.com/mentels/Erlang-Tweeter.git",
+       {ref,"23561f585b30790b92be630566b4af1d37290cb0"}},
+  0},
+ {<<"jsx">>,{pkg,<<"jsx">>,<<"2.8.0">>},1},
+ {<<"oauth">>,
+  {git,"https://github.com/tim/erlang-oauth.git",
+       {ref,"cd31addc828179983564fd57738f1680a4a4d1ff"}},
+  1}].
