@@ -49,6 +49,7 @@ cancel_schedule(Ref) ->
   {ok, State :: #state{}} | {ok, State :: #state{}, timeout() | hibernate} |
   {stop, Reason :: term()} | ignore).
 init([]) ->
+  process_flag(trap_exit, true),
   {ok, #state{refs = maps:new()}}.
 
 -spec(handle_call(Request :: term(), From :: {pid(), Tag :: term()},
@@ -73,8 +74,8 @@ handle_cast({publish, PublishInterval}, State) ->
   do_publish(PublishInterval),
   {noreply, State};
 handle_cast({cancel_schedule, Ref}, State) ->
-  NewState = do_cancel_schedule(Ref, State),
-  {noreply, NewState};
+  do_cancel_schedule(Ref, State),
+  {noreply, State};
 handle_cast(_Request, State) ->
   {noreply, State}.
 
@@ -82,8 +83,10 @@ handle_cast(_Request, State) ->
   {noreply, NewState :: #state{}} |
   {noreply, NewState :: #state{}, timeout() | hibernate} |
   {stop, Reason :: term(), NewState :: #state{}}).
-handle_info(_Info, State) ->
-  {noreply, State}.
+handle_info({'EXIT', _, {time_keeper_cancelled, Ref}}, State) ->
+  {noreply, State#state{refs = maps:remove(Ref, State#state.refs)}};
+handle_info({'EXIT', _, {time_keeper_finished, Ref}}, State) ->
+  {noreply, State#state{refs = maps:remove(Ref, State#state.refs)}}.
 
 -spec(terminate(Reason :: (normal | shutdown | {shutdown, term()} | term()),
     State :: #state{}) -> term()).
@@ -117,8 +120,7 @@ do_cancel_schedule(Ref, State) ->
   case maps:get(Ref, State#state.refs) of
     {badkey, _} -> State;
     Pid ->
-      exit(Pid, time_keeper_cancelled),
-      State#state{refs = maps:remove(Ref, State#state.refs)}
+      exit(Pid, {time_keeper_cancelled, Ref})
   end.
 
 -spec(add_time(calendar:datetime(), calendar:time()) -> calendar:datetime()).
@@ -135,11 +137,13 @@ time_keeper_function(StartTime, EndTime, PublishInterval, Ref) ->
   catch
       _ -> ok
   end,
+
   TimeToRun = timer:seconds(calendar:datetime_to_gregorian_seconds(EndTime) - calendar:datetime_to_gregorian_seconds(calendar:local_time())),
   case timer:exit_after(TimeToRun, {time_keeper_finished, Ref}) of
-    {error, _} -> exit(self());
+    {error, Reason} -> exit(self(), Reason);
     _ -> ok
   end,
+
   timer:apply_interval(timer:seconds(calendar:time_to_seconds(PublishInterval)), ?MODULE, prompt_publishing, [PublishInterval]),
   timer:sleep(infinity).
 
