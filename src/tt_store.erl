@@ -29,7 +29,7 @@ add(Title, StartTime, EndTime) ->
 
 -spec(find_by_time(StartTime :: calendar:datetime(), EndTime :: calendar:datetime()) -> [#talk{}]).
 find_by_time(StartTime, EndTime) ->
-    gen_server:call(?SERVER, {log, StartTime, EndTime}).
+    gen_server:call(?SERVER, {find_by_time, StartTime, EndTime}).
 
 list() ->
     gen_server:call(?SERVER, {list}).
@@ -46,10 +46,10 @@ handle_call({list}, _From, State) ->
     {reply, ok};
 handle_call({add, Title, StartTime, EndTime}, _From, State) ->
     {reply, ok};
-handle_call({log, StartTime, EndTime}, _From, State) ->
+handle_call({find_by_time, StartTime, EndTime}, _From, State) ->
     {reply, ok, []};
 handle_call(_Request, _From, State) ->
-    {reply, unknown_log_level, State}.
+    {reply, unknown_request, State}.
 
 handle_cast(_Request, State) ->
     {noreply, State}.
