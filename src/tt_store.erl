@@ -49,7 +49,7 @@ handle_call({add, Title, StartTime, EndTime}, _From, State) ->
 handle_call({log, StartTime, EndTime}, _From, State) ->
     {reply, ok, []};
 handle_call(_Request, _From, State) ->
-    {reply, unknown_log_level, State}.
+    {reply, unknown_operation, State}.
 
 handle_cast(_Request, State) ->
     {noreply, State}.
