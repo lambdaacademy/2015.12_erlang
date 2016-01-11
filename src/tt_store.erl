@@ -32,7 +32,7 @@ find_by_time(StartTime, EndTime) ->
     gen_server:call(?SERVER, {log, StartTime, EndTime}).
 
 list() ->
-    gen_server:call(?SERVER, {list}).
+    gen_server:call(?SERVER, list).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -42,7 +42,7 @@ init(_) ->
     {ok, []}.
 
 
-handle_call({list}, _From, State) ->
+handle_call(list, _From, State) ->
     {reply, ok};
 handle_call({add, Title, StartTime, EndTime}, _From, State) ->
     {reply, ok};
