@@ -33,7 +33,7 @@ init([]) ->
                     start => {tt_loger, start_link, [InitLogLevel]},
                     restart => permanent,
                     type => worker,
-                    modules => [tt_loger]
+                    modules => [tt_loger, tt_store]
                    },
     {ok, { {one_for_one, 5, 10}, [LogerWorker]} }.
 
