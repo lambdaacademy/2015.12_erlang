@@ -3,7 +3,7 @@
 %% @end
 %%%-------------------------------------------------------------------
 
--module('talks_tweeter_sup').
+-module(talks_tweeter_sup).
 
 -behaviour(supervisor).
 
@@ -41,7 +41,13 @@ init([]) ->
                         type => worker,
                         modules => [tt_scheduler]
                        },
-    {ok, { {one_for_one, 5, 10}, [LoggerWorker, SchedulerWorker]} }.
+  PublisherWorker = #{id => tt_publisher,
+    start => {tt_publisher, start_link, []},
+    restart => permanent,
+    type => worker,
+    modules => [tt_publisher]
+  },
+  {ok, {{one_for_one, 5, 10}, [LoggerWorker, SchedulerWorker, PublisherWorker]}}.
 
 %%====================================================================
 %% Internal functions
