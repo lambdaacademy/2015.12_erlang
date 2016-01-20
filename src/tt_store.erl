@@ -51,8 +51,8 @@ find_by_name(Name) ->
 
 -spec init([]) -> {ok, State :: #state{}}.
 init([]) ->
-    Table = ets:new(?TABLE, [bag]),
     process_flag(trap_exit, true),
+    Table = ets:new(?TABLE, [bag]),
     {ok, #state{table = Table}}.
 
 -spec handle_call(list
