@@ -15,12 +15,16 @@ clean: rebar3
 dialyzer: rebar3
 	./rebar3 dialyzer
 
-test: rebar3
+test: ct proper
+
+ct:  compile
 	# make test suite=test/tt_importer_SUITE # to run specific suite
 	./rebar3 ct --suite=$(suite)
-	# ./rebar3 proper
 
-shell:
+proper: compile
+	./rebar3 proper
+
+shell: compile
 	erl -pa _build/default/lib/*/ebin \
 	-config config/sys \
 	-eval "application:ensure_all_started(talks_tweeter)"

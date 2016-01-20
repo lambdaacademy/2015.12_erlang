@@ -7,7 +7,7 @@
 -behaviour(gen_server).
 
 %% API
--export([start_link/0, schedule/3, cancel_schedule/1]).
+-export([start_link/0, stop/0, schedule/3, cancel_schedule/1]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -31,7 +31,9 @@
 -spec(start_link() ->
   {ok, Pid :: pid()} | ignore | {error, Reason :: term()}).
 start_link() ->
-  gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
+    gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
+stop() ->
+    gen_server:stop(?SERVER).
 
 -spec(schedule(calendar:datetime(), calendar:datetime(), calendar:time()) -> atom()).
 schedule(StartTime, EndTime, PublishInterval) ->
