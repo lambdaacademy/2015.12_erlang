@@ -35,13 +35,25 @@ init([]) ->
                     type => worker,
                     modules => [tt_loger]
                    },
+    StoreWorker = #{id => tt_store,
+                    start => {tt_store, start_link, []},
+                    restart => permanent,
+                    type => worker,
+                    modules => [tt_store]
+                   },
+    ImporterWorker = #{id => tt_importer,
+                       start => {tt_importer, start_link, []},
+                       restart => permanent,
+                       type => worker,
+                       modules => [tt_importer]
+                      },
     SchedulerWorker = #{id => tt_scheduler,
                         start => {tt_scheduler, start_link, []},
                         restart => permanent,
                         type => worker,
                         modules => [tt_scheduler]
                        },
-    {ok, { {one_for_one, 5, 10}, [LoggerWorker, SchedulerWorker]} }.
+    {ok, { {one_for_one, 5, 10}, [LoggerWorker, StoreWorker, ImporterWorker, SchedulerWorker]} }.
 
 %%====================================================================
 %% Internal functions

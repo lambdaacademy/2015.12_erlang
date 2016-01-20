@@ -1,18 +1,18 @@
 .PHONY: compile clean dev upgrade dialyzer test
 
-compile:
+compile: rebar3
 	./rebar3 compile
 
-upgrade:
+upgrade: rebar3
 	./rebar3 upgrade
 
-clean:
+clean: rebar3
 	./rebar3 clean
 
-dialyzer:
+dialyzer: rebar3
 	./rebar3 dialyzer
 
-test:
+test: rebar3
 	./rebar3 proper
 
 shell:
