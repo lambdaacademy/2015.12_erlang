@@ -23,7 +23,7 @@
 
 start(_StartType, _StartArgs) ->
     validate_config(),
-    'talks_tweeter_sup':start_link().
+  talks_tweeter_sup:start_link().
 
 %%--------------------------------------------------------------------
 stop(_State) ->
