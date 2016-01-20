@@ -13,7 +13,8 @@ dialyzer: rebar3
 	./rebar3 dialyzer
 
 test: rebar3
-	./rebar3 proper
+	./rebar3 ct
+	# ./rebar3 proper
 
 shell:
 	erl -pa _build/default/lib/*/ebin \

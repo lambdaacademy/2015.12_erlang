@@ -2,18 +2,9 @@
 
 -include_lib("common_test/include/ct.hrl").
 
+-compile([export_all]).
+
 -export([all/0]).
--export([testReversedTimes/1,
-         testList/1,
-         testExactTime/1,
-         testIncluded/1,
-         testIncludedMultipleAll/1,
-         testIncludedMultipleSome/1,
-         testOverlappingAtStart/1,
-         testOverlappingAtEnd/1,
-         testNotOverlapping/1,
-         testNameFound/1,
-         testNameNotFound/1]).
 
 all() -> [testReversedTimes,
           testList,
@@ -22,6 +13,7 @@ all() -> [testReversedTimes,
           testIncludedMultipleAll,
           testIncludedMultipleSome,
           testOverlappingAtStart,
+          testOverlappingAtStartMultiple,
           testOverlappingAtEnd,
           testNotOverlapping,
           testNameFound,
@@ -72,7 +64,17 @@ testOverlappingAtStart(_) ->
     tt_store:start_link(),
     tt_store:add("First talk",    {{2016, 5, 5}, {10, 00, 0}}, {{2016, 5, 5}, {11, 00, 0}}, "Room 1"),
     Res = tt_store:find_by_time(  {{2016, 5, 5}, { 9, 00, 0}}, {{2016, 5, 5}, {10, 30, 0}}),
-    Res = [].
+    Res = [{talk, "First talk",   {{2016, 5, 5}, {10, 00, 0}}, {{2016, 5, 5}, {11, 00, 0}}, "Room 1"}].
+
+testOverlappingAtStartMultiple(_) ->
+    tt_store:start_link(),
+    tt_store:add("First talk",    {{2016, 5, 5}, {10, 00, 0}}, {{2016, 5, 5}, {11, 00, 0}}, "Room 1"),
+    tt_store:add("Second talk",   {{2016, 5, 5}, {10, 30, 0}}, {{2016, 5, 5}, {11, 30, 0}}, "Room 1"),
+    tt_store:add("Third talk",    {{2016, 5, 5}, {11, 00, 0}}, {{2016, 5, 5}, {11, 30, 0}}, "Room 1"),
+    tt_store:add("Fourth talk",   {{2016, 5, 5}, {08, 00, 0}}, {{2016, 5, 5}, {10, 00, 0}}, "Room 1"),
+    Res = tt_store:find_by_time(  {{2016, 5, 5}, { 9, 00, 0}}, {{2016, 5, 5}, {10, 30, 0}}),
+    Res = [{talk, "First talk",   {{2016, 5, 5}, {10, 00, 0}}, {{2016, 5, 5}, {11, 00, 0}}, "Room 1"},
+           {talk, "Second talk",   {{2016, 5, 5}, {10, 00, 0}}, {{2016, 5, 5}, {11, 00, 0}}, "Room 1"}].
 
 testOverlappingAtEnd(_) ->
     tt_store:start_link(),
