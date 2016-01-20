@@ -1,3 +1,6 @@
+suite_files = $(wildcard test/*_SUITE.erl)
+suite ?= $(shell echo ${suite_files} | sed -e 's/ /,/g')
+
 .PHONY: compile clean dev upgrade dialyzer test
 
 compile: rebar3
@@ -13,7 +16,8 @@ dialyzer: rebar3
 	./rebar3 dialyzer
 
 test: rebar3
-	./rebar3 ct
+	# make test suite=test/tt_importer_SUITE # to run specific suite
+	./rebar3 ct --suite=$(suite)
 	# ./rebar3 proper
 
 shell:
