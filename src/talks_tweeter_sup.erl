@@ -35,6 +35,7 @@ init([]) ->
                     type => worker,
                     modules => [tt_loger]
                    },
+
     StoreWorker = #{id => tt_store,
                     start => {tt_store, start_link, []},
                     restart => permanent,
@@ -53,6 +54,7 @@ init([]) ->
                         type => worker,
                         modules => [tt_scheduler]
                        },
+
     PublisherWorker = #{id => tt_publisher,
                         start => {tt_publisher, start_link, []},
                         restart => permanent,
