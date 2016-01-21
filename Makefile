@@ -6,6 +6,9 @@ suite ?= $(shell echo ${suite_files} | sed -e 's/ /,/g')
 compile: rebar3
 	./rebar3 compile
 
+compile_tweet_mock: rebar3
+	./rebar3 as tweet_mock compile
+
 upgrade: rebar3
 	./rebar3 upgrade
 
@@ -26,6 +29,11 @@ proper: compile
 
 shell: compile
 	erl -pa _build/default/lib/*/ebin \
+	-config config/sys \
+	-eval "application:ensure_all_started(talks_tweeter)"
+
+shell_tweet_talk: compile_tweet_mock
+	erl -pa _build/tweet_mock/lib/*/ebin \
 	-config config/sys \
 	-eval "application:ensure_all_started(talks_tweeter)"
 

@@ -9,7 +9,15 @@
 -export([publish_inner/2]).
 
 -behaviour(gen_server).
+
 -define(SERVER, ?MODULE).
+
+-ifdef(TWEET_MOCK).
+-define(TWEET(Talk), io:format("~s~n", [Talk])).
+-else.
+-define(TWEET(Talk), etweet:tweet(Talk)).
+-endif.
+
 -record(talk, {title :: string(), start_time :: calendar:datetime(), end_time :: calendar:datetime(), location :: string()}).
 -record(state, {}).
 
@@ -35,7 +43,7 @@ handle_call(_, _, State) ->
 
 -spec(handle_cast({publish_small, Talk :: #talk{}}, State :: #state{}) -> no_return()).
 handle_cast({publish_small, Talk}, State) ->
-  etweet:tweet(Talk),
+  ?TWEET(Talk),
   {noreply, State}.
 
 -spec handle_info(_, State :: #state{}) -> {noreply, #state{}}.
@@ -63,9 +71,15 @@ publish_single_talk(Pid, Talk) ->
 
 -spec(readable_talk(Talk :: #talk{}) -> string()).
 readable_talk(Talk) ->
-  io:write(Talk),
-  lists:concat(["Presentation title: ", Talk#talk.title, " from ", datetime_to_string(Talk#talk.start_time), " to ", datetime_to_string(Talk#talk
-  .end_time), " , room: ", Talk#talk.location]).
+    Formatted = lists:concat(["Presentation title: ",
+                              Talk#talk.title,
+                              " from ",
+                              datetime_to_string(Talk#talk.start_time),
+                              " to ", datetime_to_string(Talk#talk.end_time),
+                              " , room: ",
+                              Talk#talk.location]),
+    tt_loger:log(info, io_lib:format("Publishing: ~s", [Formatted])),
+    Formatted.
 
 -spec(datetime_to_string(calendar:datetime()) -> string()).
 datetime_to_string({{Year, Month, Day}, {Hour, Min, Sec}}) ->

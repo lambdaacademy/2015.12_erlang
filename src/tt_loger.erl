@@ -70,4 +70,4 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 
 do_log(Level, Msg) ->
-    io:format("[~p] ~s", [Level, Msg]).
+    io:format("[~p] ~s~n", [Level, Msg]).
