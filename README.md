@@ -82,7 +82,7 @@ tt_store:find_by_time({{2015,12,17}, {17,00,00}}, {{2015,12,17}, {20,00,00}}) ->
 tt_store:list() -> [{TalkTitle, StartTime, EndTime, Where}]
 ```
 
-The `tt_store` module should be implemented as a `gen_server` plugged into the application supervision tree. The `tt_store:add/3` function is for adding new talks to the database. `tt_store:find_by_time/2` is for getting a list of talks that are planned to take place in a given time range. The `tt_store:list/0` should return the list of all the talks in the store.
+The `tt_store` module should be implemented as a `gen_server` plugged into the application supervision tree. The `tt_store:add/3` function is for adding new talks to the database. `tt_store:find_by_time/2` is for getting a list of talks that are planned to **start** in a given time range. The `tt_store:list/0` should return the list of all the talks in the store.
 
 ### Scheduling Publishing Talks ###
 

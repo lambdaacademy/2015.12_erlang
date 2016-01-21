@@ -20,6 +20,7 @@ _build
 config/sys.config.private
 rebar3
 rebar.lock
+.DS_Store
 
 # intellij files
 .idea

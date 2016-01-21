@@ -1,7 +1,17 @@
 -module(prop_tt_scheduler).
 
+-export([initial_state/0,
+         command/1,
+         precondition/2,
+         postcondition/3,
+         next_state/3]).
+
 -include_lib("proper/include/proper.hrl").
 
+-record(state, {schedules = [] :: [reference()]}).
+
+-define(SERVER, tt_scheduler).
+-define(MOCK, [tt_store, tt_publisher]).
 
 %%%===================================================================
 %%% Properties
@@ -12,95 +22,83 @@ prop_sanity_check() ->
 
 prop_server_alive_when_schedule_is_over() ->
     proper:numtests(
-      1,
-      ?TRAPEXIT(begin
-                    %% GIVEN
-                    Pid = start_scheduler(),
-                    {Start, Stop, Interval} = start_stop_interval(
-                                                0,
-                                                StopAfterSeconds = 2,
-                                                1),
-
-                    %% WHEN
-                    tt_scheduler:schedule(Start, Stop, Interval),
-                    timer:sleep(timer:seconds(StopAfterSeconds + 1)),
-
-                    %% THEN
-                    true = is_process_alive(Pid)
-                end)).
-
-prop_server_alive_when_schedule_cancelled() ->
-    proper:numtests(
-      1,
-      ?TRAPEXIT(begin
-                    %% GIVEN
-                    Pid = start_scheduler(),
-                    {Start, Stop, Interval} = start_stop_interval(
-                                                0,
-                                                StopAfterSeconds = 2,
-                                                1),
-
-                    %% WHEN
-                    Ref = tt_scheduler:schedule(Start, Stop, Interval),
-                    tt_scheduler:cancel_schedule(Ref),
-                    timer:sleep(timer:seconds(StopAfterSeconds + 1)),
-                    
-                    %% THEN
-                    true = is_process_alive(Pid)
-                end)).
+      10,
+      ?FORALL([Start, Stop, Interval], schedule_timing(),
+              ?TRAPEXIT(begin
+                            setup(),
+                            {ok, Pid} = ?SERVER:start_link(),
+                            
+                            %% WHEN
+                            tt_scheduler:schedule(Start, Stop, Interval),
+                            meck:wait(tt_publisher, publish, '_', 10000),
+                            
+                            %% THEN
+                            Res = is_process_alive(Pid),
+                            ?SERVER:stop(),
+                            Res
+                        end))).
 
 
-prop_server_calls_tt_store() ->
-    proper:numtests(
-      1,
-      ?TRAPEXIT(begin
-                    %% GIVEN
-                    meck:new(tt_store, [passthrough]),
-                    Pid = start_scheduler(),
-                    {Start, Stop, Interval} =
-                        start_stop_interval(0,
-                                            StopAfterSeconds = 3,
-                                            IntervalSeconds = 1),
+prop_scheduler_works_fine() ->
+    ?FORALL(Cmds, commands(?MODULE),
+            ?TRAPEXIT(
+               begin
+                   setup(),
+                   ?SERVER:start_link(),
+                   {History, State, Result} = run_commands(?MODULE, Cmds),
+                   ?SERVER:stop(),
+                   ?WHENFAIL(io:format("History: ~w\nState: ~w\nResult: ~w~n",
+                                       [History, State, Result]),
+                             Result =:= ok)
+               end)).
 
-                    %% WHEN
-                    tt_scheduler:schedule(Start, Stop, Interval),
-                    Times = at_least_times(StopAfterSeconds,
-                                           IntervalSeconds),
-                    
-                    %% THEN
-                    meck:wait(Times, tt_store, find_by_time, '_',
-                              timer:seconds(StopAfterSeconds + 1)),
-                    meck:unload(tt_store),
-                    is_process_alive(Pid)
-                end)).
+%%%===================================================================
+%%% Callbacks
+%%%===================================================================
 
-prop_server_calls_tt_publisher() ->
-    proper:numtests(
-      1,
-      ?TRAPEXIT(begin
-                    %% GIVEN
-                    meck:new(tt_publisher, [passthrough]),
-                    Pid = start_scheduler(),
-                    {Start, Stop, Interval} =
-                        start_stop_interval(0,
-                                            StopAfterSeconds = 3,
-                                            IntervalSeconds = 1),
+initial_state() ->
+    #state{}.
 
-                    %% WHEN
-                    tt_scheduler:schedule(Start, Stop, Interval),
-                    Times = at_least_times(StopAfterSeconds,
-                                           IntervalSeconds),
+command(S) ->
+    Schedules = (S#state.schedules =/= []),
+    oneof([{call, ?SERVER, schedule, schedule_timing()}] ++
+              [{call, ?SERVER, cancel_schedule, [schedule_ref(S)]}
+               || Schedules]).
 
-                    %% THEN
-                    meck:wait(Times, tt_publisher, publish, 1,
-                              timer:seconds(StopAfterSeconds + 1)),
-                    meck:unload(tt_publisher),
-                    is_process_alive(Pid)
-                end)).
+precondition(S, {call, _, cancel_schedule, [Ref]}) ->
+    lists:member(Ref, S#state.schedules);
+precondition(_, _) -> true.
+
+postcondition(_S, {call, _, schedule, _}, V) ->
+    is_reference(V) andalso is_process_alive(whereis(?SERVER));
+postcondition(_, _, _) ->
+    true.
+
+
+next_state(S, V, {call, _, schedule, _}) ->
+    S#state{schedules = [V|S#state.schedules]};
+next_state(S, _V, {call, _, cancel_schedule, [Ref]}) ->
+    S#state{schedules = lists:delete(Ref, S#state.schedules)}.
+
+schedule_timing() ->
+    ?LET({StartAfterS, StopAfterS, Interval},
+         {integer(1,2), integer(2,5), integer(1,2)},
+         tuple_to_list(start_stop_interval(StartAfterS,
+                                           StopAfterS,
+                                           Interval))).
+
+schedule_ref(#state{schedules = Schedules}) ->
+    elements(Schedules).
 
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+
+setup() ->
+    meck:unload(),
+    ok = meck:new(?MOCK),
+    meck:expect(tt_publisher, publish, 1, ok),
+    meck:expect(tt_store, find_by_time, 2, ok).
 
 -spec(start_stop_interval(StartAfterSeconds :: non_neg_integer(),
                           StopAfterSeconds :: non_neg_integer(),
@@ -117,20 +115,9 @@ start_stop_interval(StartAfterSeconds,
     Interval = calendar:seconds_to_time(IntervalSeconds),
     {Start, Stop, Interval}.
 
--spec(start_scheduler() -> pid()).
-start_scheduler() ->
-    catch gen_server:stop(tt_scheduler),
-    {ok, Pid} = tt_scheduler:start_link(),
-    Pid.
-
 -spec(increment_datetime(calendar:datetime(), non_neg_integer()) ->
              calendar:datetime()).
 increment_datetime(DateTime, Seconds) ->
     DTSeconds = calendar:datetime_to_gregorian_seconds(DateTime),
     calendar:gregorian_seconds_to_datetime(DTSeconds + Seconds).
-
--spec(at_least_times(non_neg_integer(), non_neg_integer()) ->
-             non_neg_integer()).
-at_least_times(StopAfterSeconds, IntervalSeconds) ->
-    (StopAfterSeconds div IntervalSeconds) - 1.
 
