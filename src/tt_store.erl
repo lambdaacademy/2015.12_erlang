@@ -24,7 +24,7 @@
 
 -spec start_link() -> {ok, Pid :: pid()} | ignore | {error, Reason :: term()}.
 start_link() ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
+    gen_server:start_link({local, ?SERVER}, ?MODULE, [self()], []).
 
 -spec add(Title :: string, StartTime :: calendar:datetime(), EndTime :: calendar:datetime(), Where :: string) -> ok.
 add(Title, StartTime, EndTime, Where) when StartTime =< EndTime ->
@@ -50,10 +50,10 @@ find_by_name(Name) ->
 %%%===================================================================
 
 -spec init([]) -> {ok, State :: #state{}}.
-init([]) ->
+init([ParentPid]) ->
     process_flag(trap_exit, true),
-    Table = ets:new(?TABLE, [bag]),
-    {ok, #state{table = Table}}.
+    maybe_ets(?TABLE, ParentPid),
+    {ok, #state{table = ?TABLE}}.
 
 -spec handle_call(list
     | {find_by_time, StartTime :: calendar:datetime(), EndTime :: calendar:datetime()}
@@ -102,6 +102,15 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 
+maybe_ets(Tid, ParentPid) ->
+    case ets:info(Tid) of
+        undefined ->
+            ets:new(Tid, [bag, public, named_table]),
+            ets:give_away(Tid, ParentPid, 'take care of my ETS, dude!');
+        _TableExists ->
+            ok
+    end.
+
 -spec insert_data(Table :: ets:tab(), Record :: {Title :: string, StartTime :: calendar:datetime(), EndTime :: calendar:datetime(), Where :: string}) ->
     true.
 insert_data(Table, Record) ->
@@ -128,4 +137,3 @@ find_records_by_time(Table, Time) ->
     {StartTime, EndTime} = Time,
     MatchSpec = ets:fun2ms(fun(N = #talk{start_time = Start, end_time = End}) when Start >= StartTime, End =< EndTime -> N end),
     ets:select(Table, MatchSpec).
-
