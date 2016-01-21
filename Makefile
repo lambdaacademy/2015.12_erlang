@@ -32,7 +32,7 @@ shell: compile
 	-config config/sys \
 	-eval "application:ensure_all_started(talks_tweeter)"
 
-shell_tweet_talk: compile_tweet_mock
+shell_tweet_mock: compile_tweet_mock
 	erl -pa _build/tweet_mock/lib/*/ebin \
 	-config config/sys \
 	-eval "application:ensure_all_started(talks_tweeter)"
