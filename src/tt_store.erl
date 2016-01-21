@@ -4,6 +4,7 @@
 -behaviour(gen_server).
 
 -include_lib("stdlib/include/ms_transform.hrl").
+-include("talks_tweeter.hrl").
 
 %% API
 -export([start_link/0, add/4, find_by_time/2, find_by_name/1, list/0]).
@@ -13,9 +14,6 @@
 
 -define(SERVER, ?MODULE).
 -define(TABLE, talks).
-
--record(talk,  {title :: string(), start_time :: calendar:datetime(), end_time :: calendar:datetime(), location :: string()}).
--record(state, {table :: ets:tab()}).
 
 
 %%%===================================================================
@@ -126,6 +124,6 @@ find_records_by_name(Table, Name) ->
 -spec find_records_by_time(Table :: ets:tab(), Time :: {calendar:datetime(), calendar:datetime()}) -> [#talk{}].
 find_records_by_time(Table, Time) ->
     {StartTime, EndTime} = Time,
-    MatchSpec = ets:fun2ms(fun(N = #talk{start_time = Start, end_time = End}) when Start >= StartTime, End =< EndTime -> N end),
+    MatchSpec = ets:fun2ms(fun(N = #talk{start_time = Start, end_time = End}) when Start >= StartTime, Start =< EndTime -> N end),
     ets:select(Table, MatchSpec).
 
