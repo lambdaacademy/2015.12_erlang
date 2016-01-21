@@ -70,4 +70,12 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 
 do_log(Level, Msg) ->
-    io:format("[~p] ~s~n", [Level, Msg]).
+    io:format("[~p][~p] ~s~n", [format_iso8601(), Level, Msg]).
+
+format_iso8601() ->
+    {{Year, Month, Day}, {Hour, Min, Sec}} =
+        calendar:universal_time(),
+    iolist_to_binary(
+      io_lib:format(
+        "~.4.0w-~.2.0w-~.2.0wT~.2.0w:~.2.0w:~.2.0wZ",
+        [Year, Month, Day, Hour, Min, Sec] )).
