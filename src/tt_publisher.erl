@@ -18,7 +18,7 @@
 -define(TWEET(Talk), etweet:tweet(Talk)).
 -endif.
 
--record(talk, {title :: string(), start_time :: calendar:datetime(), end_time :: calendar:datetime(), location :: string()}).
+-include("talks_tweeter.hrl").
 -record(state, {}).
 
 %% API

@@ -26,7 +26,7 @@ prop_server_alive_when_schedule_is_over() ->
       ?FORALL([Start, Stop, Interval], schedule_timing(),
               ?TRAPEXIT(begin
                             setup(),
-                            {ok, Pid} = ?SERVER:start_link(),
+                            {ok, Pid} = ?SERVER:start_link({0,0,1}, {0,0,1}),
                             
                             %% WHEN
                             tt_scheduler:schedule(Start, Stop, Interval),
@@ -44,7 +44,7 @@ prop_scheduler_works_fine() ->
             ?TRAPEXIT(
                begin
                    setup(),
-                   ?SERVER:start_link(),
+                   ?SERVER:start_link({0,0,1}, {0,0,1}),
                    {History, State, Result} = run_commands(?MODULE, Cmds),
                    ?SERVER:stop(),
                    ?WHENFAIL(io:format("History: ~w\nState: ~w\nResult: ~w~n",
