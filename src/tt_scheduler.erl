@@ -7,7 +7,7 @@
 -behaviour(gen_server).
 
 %% API
--export([start_link/0, stop/0, schedule/3, cancel_schedule/1]).
+-export([stop/0, schedule/3, cancel_schedule/1, start_link/2]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -18,26 +18,27 @@
   code_change/3]).
 
 %% auxiliary functions
--export([time_keeper_function/4,  prompt_publishing/1]).
+-export([time_keeper_function/4, prompt_action/1]).
 
 -define(SERVER, ?MODULE).
 
--record(state, {refs :: #{reference() => pid()}}).
+-record(schedule, {start_time :: calendar:datetime(), end_time :: calendar:datetime(), time_before_talk :: calendar:time(), pid :: pid()}).
+-record(state, {refs :: #{reference() => #schedule{}}, action_interval :: calendar:time(), time_window :: calendar:time()}).
 
 %%%===================================================================
 %%% API
 %%%===================================================================
 
--spec(start_link() ->
+-spec(start_link(ActionInterval :: calendar:time(), TimeWindow :: calendar:time()) ->
   {ok, Pid :: pid()} | ignore | {error, Reason :: term()}).
-start_link() ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
+start_link(ActionInterval, TimeWindow) ->
+    gen_server:start_link({local, ?SERVER}, ?MODULE, [ActionInterval, TimeWindow], []).
 stop() ->
     gen_server:stop(?SERVER).
 
--spec(schedule(calendar:datetime(), calendar:datetime(), calendar:time()) -> atom()).
-schedule(StartTime, EndTime, PublishInterval) ->
-  gen_server:call(?SERVER, {schedule, StartTime, EndTime, PublishInterval}).
+-spec(schedule(calendar:datetime(), calendar:datetime(), calendar:time()) -> reference()).
+schedule(StartTime, EndTime, TimeBeforeTalk) ->
+  gen_server:call(?SERVER, {schedule, StartTime, EndTime, TimeBeforeTalk}).
 
 -spec(cancel_schedule(reference()) -> no_return()).
 cancel_schedule(Ref) ->
@@ -47,24 +48,24 @@ cancel_schedule(Ref) ->
 %%% gen_server callbacks
 %%%===================================================================
 
--spec init([]) -> {ok, State :: #state{}}.
-init([]) ->
+-spec init([calendar:time()]) -> {ok, State :: #state{}}.
+init([ActionInterval, TimeWindow]) ->
   process_flag(trap_exit, true),
-  {ok, #state{refs = maps:new()}}.
+  {ok, #state{refs = maps:new(), action_interval = ActionInterval, time_window = TimeWindow}}.
 
 -spec handle_call({schedule, StartTime :: calendar:datetime(), EndTime :: calendar:datetime(), PublishInterval :: calendar:time()},
     From :: {pid(), Tag :: term()}, State :: #state{}) ->
   {reply, reference(), NewState :: #state{}}.
-handle_call({schedule, StartTime, EndTime, PublishInterval}, _From, State) ->
-  {Ref, NewState} = do_schedule(StartTime, EndTime, PublishInterval, State),
+handle_call({schedule, StartTime, EndTime, TimeBeforeTalk}, _From, State) ->
+  {Ref, NewState} = do_schedule(StartTime, EndTime, TimeBeforeTalk, State),
   {reply, Ref, NewState};
 handle_call(_Request, _From, State) ->
   {reply, ok, State}.
 
--spec handle_cast({publish, calendar:time()} | {cancel_schedule, reference()}, State :: #state{}) ->
+-spec handle_cast({action, calendar:time()} | {cancel_schedule, reference()}, State :: #state{}) ->
   {noreply, NewState :: #state{}}.
-handle_cast({publish, PublishInterval}, State) ->
-  do_publish(PublishInterval),
+handle_cast({action, Ref}, State) ->
+  do_action(Ref, State),
   {noreply, State};
 handle_cast({cancel_schedule, Ref}, State) ->
   do_cancel_schedule(Ref, State),
@@ -94,24 +95,32 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 
--spec(do_publish(calendar:time()) -> no_return()).
-do_publish(PublishInterval) ->
-  CTime = calendar:local_time(),
-  Talks = tt_store:find_by_time(CTime, add_time(CTime, PublishInterval)),
-  tt_publisher:publish(Talks).
+-spec(do_action(reference(), #state{}) -> no_return()).
+do_action(Ref, State) ->
+  case maps:find(Ref, State#state.refs) of
+    {ok, #schedule{time_before_talk = TimeBeforeTalk}} ->
+      CTime = calendar:local_time(),
+      STime = add_time(CTime, TimeBeforeTalk),
+      ETime = add_time(STime, State#state.time_window),
+      Talks = tt_store:find_by_time_unpublished(STime, ETime),
+      tt_store:mark_published(Talks),
+      tt_publisher:publish(Talks);
+    _ -> ok
+  end.
 
--spec(do_schedule(calendar:datetime(), calendar:datetime(), calendar:time(), #state{}) -> {reference(), #state{}}).
-do_schedule(StartTime, EndTime, PublishInterval, State) ->
+-spec(do_schedule(calendar:datetime(), calendar:datetime(), calendar:ti1me(), #state{}) -> {reference(), #state{}}).
+do_schedule(StartTime, EndTime, TimeBeforeTalk, State) ->
   Ref = make_ref(),
-  Pid = spawn_link(?MODULE, time_keeper_function, [StartTime, EndTime, PublishInterval, Ref]),
-  {Ref, State#state{refs = maps:put(Ref, Pid, State#state.refs)}}.
+  Pid = spawn_link(?MODULE, time_keeper_function, [StartTime, EndTime, State#state.action_interval, Ref]),
+  {Ref, State#state{refs = maps:put(
+    Ref, #schedule{start_time = StartTime, end_time = EndTime, time_before_talk = TimeBeforeTalk, pid = Pid},
+    State#state.refs)}}.
 
 -spec(do_cancel_schedule(reference(), #state{}) -> #state{}).
 do_cancel_schedule(Ref, State) ->
-  case maps:get(Ref, State#state.refs) of
-    {badkey, _} -> State;
-    Pid ->
-      exit(Pid, {time_keeper_cancelled, Ref})
+  case maps:find(Ref, State#state.refs) of
+    {ok, #schedule{pid = Pid}} -> exit(Pid, {time_keeper_cancelled, Ref});
+    _ -> State
   end.
 
 -spec(add_time(calendar:datetime(), calendar:time()) -> calendar:datetime()).
@@ -121,19 +130,19 @@ add_time(T1, T2) ->
   calendar:gregorian_seconds_to_datetime(S1 + S2).
 
 -spec(time_keeper_function(calendar:datetime(), calendar:datetime(), calendar:time(), reference()) -> no_return()).
-time_keeper_function(StartTime, EndTime, PublishInterval, Ref) ->
+time_keeper_function(StartTime, EndTime, ActionInterval, Ref) ->
   TimeToSleep = timer:seconds(calendar:datetime_to_gregorian_seconds(StartTime) - calendar:datetime_to_gregorian_seconds(calendar:local_time())),
   timer:sleep(TimeToSleep),
 
-  TimeToRun = timer:seconds(calendar:datetime_to_gregorian_seconds(EndTime) - calendar:datetime_to_gregorian_seconds(calendar:local_time())),
+  TimeToRun = timer:seconds(calendar:datetime_to_gregorian_seconds(EndTime) - calendar:datetime_to_gregorian_seconds(calendar:local_time()) + 1),
   case timer:exit_after(TimeToRun, {time_keeper_finished, Ref}) of
     {error, Reason} -> exit(self(), Reason);
     _ -> ok
   end,
 
-  timer:apply_interval(timer:seconds(calendar:time_to_seconds(PublishInterval)), ?MODULE, prompt_publishing, [PublishInterval]),
+  timer:apply_interval(timer:seconds(calendar:time_to_seconds(ActionInterval)), ?MODULE, prompt_action, [Ref]),
   timer:sleep(infinity).
 
--spec(prompt_publishing(calendar:time()) -> no_return()).
-prompt_publishing(PublishInterval) ->
-  gen_server:cast(?SERVER, {publish, PublishInterval}).
+-spec(prompt_action(reference()) -> no_return()).
+prompt_action(Ref) ->
+  gen_server:cast(?SERVER, {action, Ref}).

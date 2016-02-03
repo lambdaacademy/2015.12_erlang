@@ -7,12 +7,12 @@
 %% API
 -export([gen_talks/4, gen_talks_now/3]).
 
--spec gen_talks(calendar:datetime(), integer(), integer(), filename:all()) -> true.
+-spec gen_talks(calendar:datetime(), integer(), integer(), filename:all()) -> ok.
 gen_talks(StartTime, Num, IntervalSec, OutFilename) ->
   file:write_file(OutFilename, "", [write]),
   gen_talks_int(StartTime, Num, IntervalSec, OutFilename, 0).
 
--spec gen_talks_now(integer(), integer(), filename:all()) -> true.
+-spec gen_talks_now(integer(), integer(), filename:all()) -> ok.
 gen_talks_now(Num, IntervalSec, OutFilename) ->
   gen_talks(calendar:local_time(), Num, IntervalSec, OutFilename).
 

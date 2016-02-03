@@ -48,8 +48,11 @@ init([]) ->
                        type => worker,
                        modules => [tt_importer]
                       },
+
+    ActionInterval = {0, 0, 1},
+    TimeWindow = {0, 0, 3},
     SchedulerWorker = #{id => tt_scheduler,
-                        start => {tt_scheduler, start_link, []},
+                        start => {tt_scheduler, start_link, [ActionInterval, TimeWindow]},
                         restart => permanent,
                         type => worker,
                         modules => [tt_scheduler]
