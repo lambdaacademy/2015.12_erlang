@@ -25,7 +25,11 @@ testImport(Config) ->
     %% THEN
     Expected = lists:foldl(
                  fun(T, Acc) ->
-                         [list_to_tuple([talk | tuple_to_list(T)])
-                          | Acc]
+                         [
+                          list_to_tuple([talk | tuple_to_list(T)]
+                                        ++ [false])
+                          | Acc
+                         ]
                  end, [], element(2, file:consult(DataFile))),
     ?assertEqual(lists:sort(Expected), lists:sort(tt_store:list())).
+I
