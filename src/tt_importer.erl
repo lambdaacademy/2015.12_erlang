@@ -32,7 +32,13 @@ import_file(Filename) ->
                       StareDate :: calendar:date()) ->
                              ok | {error, Reason :: term()}.
 import_csv_file(Filename, StartDate) ->
-    gen_server:call(?SERVER, {import_csv_file, Filename, StartDate}).
+    case filelib:is_file(Filename) of
+        true ->
+            gen_server:call(?SERVER,
+                            {import_csv_file, Filename, StartDate});
+        false ->
+            {error, file_not_exists}
+    end.
 
 %%%===================================================================
 %%% gen_server callbacks
