@@ -78,6 +78,7 @@ handle_cast(_Request, State) ->
 handle_info({'EXIT', _, {time_keeper_cancelled, Ref}}, State) ->
   {noreply, State#state{refs = maps:remove(Ref, State#state.refs)}};
 handle_info({'EXIT', _, {time_keeper_finished, Ref}}, State) ->
+  log_finished_schedule(Ref, State#state.refs),
   {noreply, State#state{refs = maps:remove(Ref, State#state.refs)}}.
 
 -spec(terminate(Reason :: (normal | shutdown | {shutdown, term()} | term()),
@@ -112,6 +113,7 @@ do_action(Ref, State) ->
 do_schedule(StartTime, EndTime, TimeBeforeTalk, State) ->
   Ref = make_ref(),
   Pid = spawn_link(?MODULE, time_keeper_function, [StartTime, EndTime, State#state.action_interval, Ref]),
+  log_msg("New schedule", StartTime, EndTime, TimeBeforeTalk),
   {Ref, State#state{refs = maps:put(
     Ref, #schedule{start_time = StartTime, end_time = EndTime, time_before_talk = TimeBeforeTalk, pid = Pid},
     State#state.refs)}}.
@@ -119,7 +121,9 @@ do_schedule(StartTime, EndTime, TimeBeforeTalk, State) ->
 -spec(do_cancel_schedule(reference(), #state{}) -> #state{}).
 do_cancel_schedule(Ref, State) ->
   case maps:find(Ref, State#state.refs) of
-    {ok, #schedule{pid = Pid}} -> exit(Pid, {time_keeper_cancelled, Ref});
+    {ok, #schedule{pid = Pid, start_time = StartTime, end_time = EndTime, time_before_talk = TimeBeforeTalk}} ->
+      log_msg("Cancelled schedule", StartTime, EndTime, TimeBeforeTalk),
+      exit(Pid, {time_keeper_cancelled, Ref});
     _ -> State
   end.
 
@@ -146,3 +150,20 @@ time_keeper_function(StartTime, EndTime, ActionInterval, Ref) ->
 -spec(prompt_action(reference()) -> no_return()).
 prompt_action(Ref) ->
   gen_server:cast(?SERVER, {action, Ref}).
+
+-spec log_finished_schedule(reference(), #{}) -> no_return().
+log_finished_schedule(Ref, Refs) ->
+  case maps:find(Ref, Refs) of
+    {ok, #schedule{start_time = StartTime, end_time = EndTime, time_before_talk = TimeBeforeTalk}} ->
+      log_msg("Finished schedule", StartTime, EndTime, TimeBeforeTalk), ok;
+    _ -> ok
+  end.
+
+log_msg(Msg, StartTime, EndTime, TimeBeforeTalk) ->
+  M = io_lib:format("~s. Start time: ~s, End time: ~s, Time between talks: ~s", [
+    Msg,
+    tt_publisher:datetime_to_string(StartTime),
+    tt_publisher:datetime_to_string(EndTime),
+    tt_publisher:time_to_string(TimeBeforeTalk)
+  ]),
+  tt_loger:log(info, M).
