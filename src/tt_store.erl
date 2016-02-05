@@ -110,7 +110,6 @@ handle_info(Info, State) ->
 -spec(terminate(Reason :: (normal | shutdown | {shutdown, term()} | term()),
     State :: #state{}) -> term()).
 terminate(_Reason, _State) ->
-    io:format("tt_store is going down!~n", []),
     ok.
 
 -spec(code_change(OldVsn :: term() | {down, term()}, State :: #state{}, Extra :: term()) ->

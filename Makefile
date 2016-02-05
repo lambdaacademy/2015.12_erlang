@@ -15,6 +15,9 @@ upgrade: rebar3
 clean: rebar3
 	./rebar3 clean
 
+deep-clean:
+	./rebar3 clean -a
+
 dialyzer: rebar3
 	./rebar3 dialyzer
 

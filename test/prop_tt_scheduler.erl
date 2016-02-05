@@ -26,7 +26,9 @@ prop_server_alive_when_schedule_is_over() ->
       ?FORALL([Start, Stop, Interval], schedule_timing(),
               ?TRAPEXIT(begin
                             setup(),
-                            {ok, Pid} = ?SERVER:start_link({0,0,1}, {0,0,1}),
+                            {ok, Pid} = ?SERVER:start_link(
+                                           _ActionInterval = {0,0,1},
+                                           _TimeWindow = {0,0,1}),
                             
                             %% WHEN
                             tt_scheduler:schedule(Start, Stop, Interval),
@@ -44,7 +46,8 @@ prop_scheduler_works_fine() ->
             ?TRAPEXIT(
                begin
                    setup(),
-                   ?SERVER:start_link({0,0,1}, {0,0,1}),
+                   ?SERVER:start_link(_ActionInterval = {0,0,1},
+                                      _TimeWindow = {0,0,1}),
                    {History, State, Result} = run_commands(?MODULE, Cmds),
                    ?SERVER:stop(),
                    ?WHENFAIL(io:format("History: ~w\nState: ~w\nResult: ~w~n",
@@ -98,7 +101,10 @@ setup() ->
     meck:unload(),
     ok = meck:new(?MOCK),
     meck:expect(tt_publisher, publish, 1, ok),
-    meck:expect(tt_store, find_by_time, 2, ok).
+    [meck:expect(tt_store, F, A, ok)
+     || {F,A} <- [{find_by_time, 2},
+                  {find_by_time_unpublished, 2},
+                  {mark_published, 1}]].
 
 -spec(start_stop_interval(StartAfterSeconds :: non_neg_integer(),
                           StopAfterSeconds :: non_neg_integer(),

@@ -56,6 +56,9 @@ tt_importer:start_link() -> Result.
 tt_importer:import_file(Filename) -> ok.
 tt_importer:import_file("priv/talks") -> ok.
 
+tt_importer:import_csv_file(Filename, StartDate) -> ok | {error ,file_not_exists}.
+tt_importer:import_csv_file("talks.csv", {2016,02,04}).
+
 ```
 
 The `tt_importer` should be implemented as a `gen_server` plugged into the application supervision tree. The `tt_importer:import_file/1` function takes a file name as an argument and import its content into the database using its API (`tt_store:add/4`).
@@ -66,6 +69,25 @@ The file with the talks should have the following format:
   {"School of Erlang", {{2015,12,15}, {10,00,00}}, {{2015,12,15}, {11,00,00}}, "ESL Office"},
   {"School of Elixir", {{2015,12,15}, {11,00,00}}, {{2015,12,15}, {12,00,00}}, "ESL Office"}
 ]
+```
+
+The `tt_importer:import_csv_file/2` functions takes two arguments: a CSV file and a date that talks stored in the file start on. An example file content is:
+
+```csv
+"Keynote: Haskell",room 3,2,185
+I love teacher?,room 1,1,330
+"Bad news: teacher?",room 3,2,240
+"Joe, do you know Cooking",room 3,1,360
+```
+
+The format is: 
+`Title, Location, Day No, Start Time in Minutes from 7:00`
+
+There're 3 locations which map as follows:
+```
+room 1 -> Aula średnia A
+room 2 -> Aula średnia B
+room 3 -> Aula mała
 ```
 
 ### Talks Database ###
