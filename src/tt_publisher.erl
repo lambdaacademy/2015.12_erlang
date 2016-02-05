@@ -7,6 +7,9 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 %% UTIL API
 -export([publish_inner/2]).
+%% utils
+-export([datetime_to_string/1, time_to_string/1]).
+
 
 -behaviour(gen_server).
 
@@ -18,7 +21,7 @@
 -define(TWEET(Talk), etweet:tweet(Talk)).
 -endif.
 
--record(talk, {title :: string(), start_time :: calendar:datetime(), end_time :: calendar:datetime(), location :: string()}).
+-include("talks_tweeter.hrl").
 -record(state, {}).
 
 %% API
@@ -85,3 +88,7 @@ readable_talk(Talk) ->
 datetime_to_string({{Year, Month, Day}, {Hour, Min, Sec}}) ->
   %io_lib:format('~2..0b.~2..0b.~4..0b ~2..0b:~2..0b:~2..0b', [Day, Month, Year, Hour, Min, Sec]).
   lists:concat([Day, ".", Month, ".", Year, " ", Hour, ":", Min, ":", Sec]).
+
+-spec time_to_string(calendar:date()) -> string().
+time_to_string({Hour, Min, Sec}) ->
+  lists:concat([Hour, ":", Min, ":", Sec]).

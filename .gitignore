@@ -22,6 +22,8 @@ rebar3
 rebar.lock
 .DS_Store
 
+/talks.txt
+
 # intellij files
-.idea
+.idea/
 *.iml
