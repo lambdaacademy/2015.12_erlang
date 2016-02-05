@@ -32,4 +32,3 @@ testImport(Config) ->
                          ]
                  end, [], element(2, file:consult(DataFile))),
     ?assertEqual(lists:sort(Expected), lists:sort(tt_store:list())).
-I

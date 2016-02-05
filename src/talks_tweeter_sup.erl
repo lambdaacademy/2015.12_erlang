@@ -49,8 +49,8 @@ init([]) ->
                        modules => [tt_importer]
                       },
 
-    ActionInterval = {0, 0, 1},
-    TimeWindow = {0, 0, 3},
+    ActionInterval = application:get_env(talks_tweeter, action_interval, {0,0,1}),
+    TimeWindow = application:get_env(talks_tweeter, time_window, {0,0,3}),
     SchedulerWorker = #{id => tt_scheduler,
                         start => {tt_scheduler, start_link, [ActionInterval, TimeWindow]},
                         restart => permanent,

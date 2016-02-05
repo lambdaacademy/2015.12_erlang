@@ -25,5 +25,5 @@ rebar.lock
 /talks.txt
 
 # intellij files
-.idea
+.idea/
 *.iml
