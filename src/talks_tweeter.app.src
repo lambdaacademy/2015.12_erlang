@@ -6,6 +6,7 @@
   {applications,
    [ssl,
     etweet,
+    ecsv,
     kernel,
     stdlib
    ]},
