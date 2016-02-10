@@ -74,15 +74,17 @@ publish_single_talk(Pid, Talk) ->
 
 -spec(readable_talk(Talk :: #talk{}) -> string()).
 readable_talk(Talk) ->
-    Formatted = lists:concat(["Presentation title: ",
-                              Talk#talk.title,
-                              " from ",
-                              datetime_to_string(Talk#talk.start_time),
-                              " to ", datetime_to_string(Talk#talk.end_time),
-                              " , room: ",
-                              Talk#talk.location]),
-    tt_loger:log(info, io_lib:format("Publishing: ~s", [Formatted])),
-    Formatted.
+    Formatted0 = io_lib:format("~s, ~s - ~s, ~s",
+                               [Talk#talk.title,
+                                datetime_to_time_string_without_secnods(Talk#talk.start_time),
+                                datetime_to_time_string_without_secnods(Talk#talk.end_time),
+                                Talk#talk.location]),
+    Formatted1 = lists:flatten(Formatted0),
+    tt_loger:log(info, io_lib:format("Publishing: ~s", [Formatted1])),
+    Formatted1.
+
+datetime_to_time_string_without_secnods({_, {H, M, _}}) ->
+    lists:flatten(io_lib:format('~2..0b:~2..0b', [H, M])).
 
 -spec(datetime_to_string(calendar:datetime()) -> string()).
 datetime_to_string({{Year, Month, Day}, {Hour, Min, Sec}}) ->
