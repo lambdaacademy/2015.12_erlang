@@ -100,7 +100,10 @@ schedule_ref(#state{schedules = Schedules}) ->
 setup() ->
     meck:unload(),
     ok = meck:new(?MOCK),
-    meck:expect(tt_publisher, publish, 1, ok),
+    [meck:expect(tt_publisher, F, A, ok)
+     || {F,A} <- [{publish, 1},
+                  {datetime_to_string, 1},
+                  {time_to_string, 1}]],
     [meck:expect(tt_store, F, A, ok)
      || {F,A} <- [{find_by_time, 2},
                   {find_by_time_unpublished, 2},
