@@ -7,6 +7,9 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 %% UTIL API
 -export([publish_inner/2]).
+%% utils
+-export([datetime_to_string/1, time_to_string/1]).
+
 
 -behaviour(gen_server).
 
@@ -18,7 +21,7 @@
 -define(TWEET(Talk), etweet:tweet(Talk)).
 -endif.
 
--record(talk, {title :: string(), start_time :: calendar:datetime(), end_time :: calendar:datetime(), location :: string()}).
+-include("talks_tweeter.hrl").
 -record(state, {}).
 
 %% API
@@ -71,17 +74,23 @@ publish_single_talk(Pid, Talk) ->
 
 -spec(readable_talk(Talk :: #talk{}) -> string()).
 readable_talk(Talk) ->
-    Formatted = lists:concat(["Presentation title: ",
-                              Talk#talk.title,
-                              " from ",
-                              datetime_to_string(Talk#talk.start_time),
-                              " to ", datetime_to_string(Talk#talk.end_time),
-                              " , room: ",
-                              Talk#talk.location]),
-    tt_loger:log(info, io_lib:format("Publishing: ~s", [Formatted])),
-    Formatted.
+    Formatted0 = io_lib:format("~s, ~s - ~s, ~s",
+                               [Talk#talk.title,
+                                datetime_to_time_string_without_secnods(Talk#talk.start_time),
+                                datetime_to_time_string_without_secnods(Talk#talk.end_time),
+                                Talk#talk.location]),
+    Formatted1 = lists:flatten(Formatted0),
+    tt_loger:log(info, io_lib:format("Publishing: ~s", [Formatted1])),
+    Formatted1.
+
+datetime_to_time_string_without_secnods({_, {H, M, _}}) ->
+    lists:flatten(io_lib:format('~2..0b:~2..0b', [H, M])).
 
 -spec(datetime_to_string(calendar:datetime()) -> string()).
 datetime_to_string({{Year, Month, Day}, {Hour, Min, Sec}}) ->
   %io_lib:format('~2..0b.~2..0b.~4..0b ~2..0b:~2..0b:~2..0b', [Day, Month, Year, Hour, Min, Sec]).
   lists:concat([Day, ".", Month, ".", Year, " ", Hour, ":", Min, ":", Sec]).
+
+-spec time_to_string(calendar:date()) -> string().
+time_to_string({Hour, Min, Sec}) ->
+  lists:concat([Hour, ":", Min, ":", Sec]).

@@ -109,15 +109,8 @@ import_csv_file2(Filename, StartDate) ->
 import_csv_line([Title, Room, Day, MinsFrom7Am], StartDate) ->
     StartDateTime = start_datetime(StartDate, Day, MinsFrom7Am),
     EndDateTime = end_datetime(StartDateTime, Title, Room),
-    tt_store:add(Title, StartDateTime, EndDateTime, location(Room)).
+    tt_store:add(Title, StartDateTime, EndDateTime, Room).
 
-
-location("room 1") ->
-    "Aula średnia A";
-location("room 2") ->
-    "Aula średnia B";
-location(_) ->
-    "Aula mała".
 
 start_datetime(StartDate, Day, MinsFrom7Am) ->
     calendar:gregorian_seconds_to_datetime(
@@ -130,11 +123,12 @@ end_datetime(StartDateTime, Title, Room) ->
       calendar:datetime_to_gregorian_seconds(StartDateTime)
       + calendar:time_to_seconds(talk_duration(Title, Room))).
 
-talk_duration(_, "Resarch Track") ->
+talk_duration(_, "Research Track") ->
     {0,25,0};
 talk_duration(Title, _) ->
     case string:str(Title, "Keynote") of
         0 ->
+            %% regular track
             {0,45,0};
         _ ->
             {1,0,0}
