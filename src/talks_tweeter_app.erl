@@ -23,7 +23,9 @@
 
 start(_StartType, _StartArgs) ->
     validate_config(),
-  talks_tweeter_sup:start_link().
+    tt_loger:log("Starting app with config: ~p~n",
+                 [application:get_all_env(talks_tweeter)]),
+    talks_tweeter_sup:start_link().
 
 %%--------------------------------------------------------------------
 stop(_State) ->

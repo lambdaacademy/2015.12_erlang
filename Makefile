@@ -1,7 +1,7 @@
 suite_files = $(wildcard test/*_SUITE.erl)
 suite ?= $(shell echo ${suite_files} | sed -e 's/ /,/g')
 
-.PHONY: compile clean dev upgrade dialyzer test
+.PHONY: compile clean dev upgrade dialyzer test rel
 
 compile: rebar3
 	./rebar3 compile
@@ -44,3 +44,6 @@ rebar3:
 	wget -c https://s3.amazonaws.com/rebar3/rebar3
 	chmod +x rebar3
 
+
+rel:
+	./rebar3 release
