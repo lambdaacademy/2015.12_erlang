@@ -16,11 +16,11 @@
                    "Keynote: ",
                    "Bad news: ",
                    "Who are you, "]).
--define(TITLES, ["Erlang",
-                 "Elixir",
+-define(TITLES, ["'Erlang'",
+                 "'Elixir'",
                  "Cooking",
-                 "Haskell",
-                 "Scala",
+                 "'Haskell'",
+                 "'Scala'",
                  "teacher?",
                  "wife?",
                  "Keeping distance",
@@ -69,7 +69,18 @@ gen_talk() ->
 gen_title() ->
     ?LET({Prefix, Suffix},
          {elements(?PREFIXES), elements(?TITLES)},
-         Prefix ++ Suffix).
+         begin
+             Title = Prefix ++ Suffix,
+             case string:chr(Title, $,) + string:chr(Title, $') of
+                 0 ->
+                     Title;
+                 _ ->
+                     [$"] ++ Title ++ [$"]
+             end
+         end).
+
+double_quote(S) ->
+    re:replace(S, "\".*\"", "\"&\"", [{return,list}]).
 
 gen_location() ->
     elements(?LOCATIONS).
@@ -112,14 +123,7 @@ write_to_file(Talks, OutFilename) ->
     file:delete(OutFilename),
     lists:foreach(
       fun(Talk) ->
-              Title = element(1, Talk),
-              Format =
-                  case string:chr(Title, $,) + string:chr(Title, $:) of
-                      0 ->
-                          "~s,~s,~p,~p~n";
-                      _ ->
-                          "~p,~s,~p,~p~n"
-                  end,
+              Format = "~s,~s,~p,~p~n",
               T = io_lib:format(Format, tuple_to_list(Talk)),
               ok = file:write_file(OutFilename, T, [append])
       end, Talks).
