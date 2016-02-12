@@ -136,7 +136,12 @@ add_time(T1, T2) ->
 -spec(time_keeper_function(calendar:datetime(), calendar:datetime(), calendar:time(), reference()) -> no_return()).
 time_keeper_function(StartTime, EndTime, ActionInterval, Ref) ->
   TimeToSleep = timer:seconds(calendar:datetime_to_gregorian_seconds(StartTime) - calendar:datetime_to_gregorian_seconds(calendar:local_time())),
-  timer:sleep(TimeToSleep),
+    case TimeToSleep > 0 of
+        true ->
+            timer:sleep(TimeToSleep);
+        false ->
+            tt_loger:log(info, "The schedule start time has passed; starting right away")
+    end,
 
   TimeToRun = timer:seconds(calendar:datetime_to_gregorian_seconds(EndTime) - calendar:datetime_to_gregorian_seconds(calendar:local_time()) + 1),
   case timer:exit_after(TimeToRun, {time_keeper_finished, Ref}) of
