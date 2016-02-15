@@ -1,34 +1,73 @@
-Practical demystification of CRDT,room 1,2,425
-Taming Cloud Complexity with F# DSLs,room 1,1,510
-Muvr,room 1,1,455
-Program derivation for functional languages,room 1,1,400
-Getting started with Frege,room 3,2,370
-Enterprise Tic-Tac-Toe -- A functional approach,room 2,2,425
-The F#orce awakens,room 1,2,265
-A brief history of programming languages,room 2,1,240
-Deriving The Documentation Of Your JSON Protocols,room 3,2,425
-Keynote: Things that Matter,room 1,2,120
-Teaching functional programming to n00bs in mobs,room 2,1,455
-Purely Functional Web Apps,room 3,2,480
-Event Sourcing & Functional Programming - a pair made in heaven,room 1,2,370
-Functional Reactive Rust,room 2,2,480
-Building Reactive Services Using Functional Programming,room 2,2,370
-Creating reactive components using ClojureScript React wrappers.,room 3,2,265
-Keynote: The Truth about Types,room 1,2,555
-History and philosophy of types,room 2,1,400
-Scala macros - swiss army knife for building libraries,room 2,2,265
-C preprocessor macros from functional programs,Research Track,1,295
+# Title, Room, Day, Minutes from 7
+#### DAY1
+
+
 Keynote: Propositions as Types,room 1,1,150
-Testing scalability of Erlang OpenFlow controller ,Research Track,1,400
-Elixir and Elm - the perfect couple.,Research Track,1,510
-Phoenix a web framework for the new web,room 1,1,240
+
+# Coffe break
+
+"Using 'Program shaping' and algorithmic skeletons to parallelise an evolutionary multi-agent system in Erlang",Research Track,1,240
+Phoenix a web framework for the new web,room 2,1,240
+A brief history of programming languages,room 3,1,240
+
 Static analysis to identify divide-and-conquer algorithms,Research Track,1,265
-"For All Code, There Exist Properties to be Checked",room 2,1,510
-ACP and PGA: Two Algebraic Theories in Computer Science,Research Track,1,455
-Functional Reactive Programming for Natural User Interface,room 1,2,480
-Making property-based testing easier to read for humans,Research Track,1,480
-Modeling your domain. What have we learned? Where do we go from here?,room 3,2,210
-"Using ""Program shaping"" and algorithmic skeletons to parallelise an evolutionary multi-agent system in Erlang",Research Track,1,240
+
+C preprocessor macros from functional programs,Research Track,1,295
+Reimagining Haskell,room 2,1,295
+On Language Design,room 3,1,295
+
+Evolution of reactive streams API for context-aware mobile applications,Research Track,1,320
+
+# Lunch Break
+
+Testing scalability of Erlang OpenFlow controller,Research Track,1,400
+A board game night with geeks,room 2,1,400
+History and philosophy of types,room 3,1,400
+
 Using an actor framework for scientific computing: opportunities and challenges,Research Track,1,425
-Evolution of reactive streams API fo context-aware mobile applications,Research Track,1,320
-The Zen of Akka,room 2,2,210
+
+ACP and PGA: Two Algebraic Theories in Computer Science,Research Track,1,455
+Muvr,room 2,1,455
+Teaching functional programming to n00bs in mobs,room 3,1,455
+
+Making property-based testing easier to read for humans,Research Track,1,480
+
+Elixir and Elm - the perfect couple.,Research Track,1,510
+Taming Cloud Complexity with F# DSLs,room 2,1,510
+The Mysteries of Dropbox,room 3, 1,510
+
+Embracing change - how to introduce Clojure into your company technology stack seamlessly,Research Track,1,535
+
+## Coffe break
+
+#### DAY2
+
+Keynote: Things that Matter,room 1,2,120
+
+### Coffe break
+
+Modeling your domain. What have we learned? Where do we go from here?,room 1,2,210
+Elmrang Connect - Ultra Lightweight Connection between Elm and Erlang,room 2,2,210
+The Zen of Akka,room 3,2,210
+
+Creating reactive components using ClojureScript React wrappers,room 1,2,265
+The F#orce awakens,room 2,2,265
+Scala macros - swiss army knife for building libraries,room 3,2,265
+
+## Lunch break
+
+Getting started with Frege,room 1,2,370
+Event Sourcing & Functional Programming - a pair made in heaven,room 2,2,370
+Building Reactive Services Using Functional Programming,room 3,2,370
+
+Deriving The Documentation Of Your JSON Protocols,room 1,2,425
+Practical demystification of CRDT,room 2,2,425
+TBA,room 3,2,425
+
+Purely Functional Web Apps,room 1,2,480
+Functional Reactive Programming for Natural User Interface,room 2,2,480
+Functional Reactive Rust,room 3,2,480
+
+## Keynote
+
+Keynote: The Truth about Types,room 1,2,555
