@@ -1,10 +1,5 @@
-# Title, Room, Day, Minutes from 7
-#### DAY1
-
-
 Keynote: Propositions as Types,room 1,1,150
 
-# Coffe break
 
 "Using 'Program shaping' and algorithmic skeletons to parallelise an evolutionary multi-agent system in Erlang",Research Track,1,240
 Phoenix a web framework for the new web,room 2,1,240
@@ -18,7 +13,6 @@ On Language Design,room 3,1,295
 
 Evolution of reactive streams API for context-aware mobile applications,Research Track,1,320
 
-# Lunch Break
 
 Testing scalability of Erlang OpenFlow controller,Research Track,1,400
 A board game night with geeks,room 2,1,400
@@ -38,13 +32,7 @@ The Mysteries of Dropbox,room 3, 1,510
 
 Embracing change - how to introduce Clojure into your company technology stack seamlessly,Research Track,1,535
 
-## Coffe break
-
-#### DAY2
-
 Keynote: Things that Matter,room 1,2,120
-
-### Coffe break
 
 Modeling your domain. What have we learned? Where do we go from here?,room 1,2,210
 Elmrang Connect - Ultra Lightweight Connection between Elm and Erlang,room 2,2,210
@@ -54,7 +42,6 @@ Creating reactive components using ClojureScript React wrappers,room 1,2,265
 The F#orce awakens,room 2,2,265
 Scala macros - swiss army knife for building libraries,room 3,2,265
 
-## Lunch break
 
 Getting started with Frege,room 1,2,370
 LFE - a lisp flavour on the Erlang VM,room 2,2,370
@@ -68,6 +55,5 @@ Purely Functional Web Apps,room 1,2,480
 Functional Reactive Programming for Natural User Interface,room 2,2,480
 Functional Reactive Rust,room 3,2,480
 
-## Keynote
 
 Keynote: The Truth about Types,room 1,2,555
