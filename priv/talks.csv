@@ -4,7 +4,7 @@ Phoenix a web framework for the new web,room 2,1,240
 A brief history of programming languages,room 3,1,240
 Static analysis to identify divide-and-conquer algorithms,Research Track,1,265
 C preprocessor macros from functional programs,Research Track,1,295
-Reimagining Haskell,room 2,1,295
+The Mysteries of Dropbox,room 2,1,295
 On Language Design,room 3,1,295
 Evolution of reactive streams API for context-aware mobile applications,Research Track,1,320
 Testing scalability of Erlang OpenFlow controller,Research Track,1,400
@@ -17,7 +17,7 @@ Teaching functional programming to n00bs in mobs,room 3,1,455
 Making property-based testing easier to read for humans,Research Track,1,480
 Elixir and Elm - the perfect couple.,Research Track,1,510
 Taming Cloud Complexity with F# DSLs,room 2,1,510
-The Mysteries of Dropbox,room 3,1,510
+Reimagining Haskell,room 3,1,510
 Embracing change - how to introduce Clojure into your company technology stack seamlessly,Research Track,1,535
 Keynote: Things that Matter,room 1,2,120
 Modeling your domain. What have we learned? Where do we go from here?,room 1,2,210
@@ -31,7 +31,7 @@ LFE - a lisp flavour on the Erlang VM,room 2,2,370
 Building Reactive Services Using Functional Programming,room 3,2,370
 Deriving The Documentation Of Your JSON Protocols,room 1,2,425
 Practical demystification of CRDT,room 2,2,425
-Functional, reactive UI programming with JavaScript,room 3,2,425
+"Functional, reactive UI programming with JavaScript",room 3,2,425
 Purely Functional Web Apps,room 1,2,480
 Functional Reactive Programming for Natural User Interface,room 2,2,480
 Functional Reactive Rust,room 3,2,480
