@@ -1,38 +1,39 @@
-Keynote: Propositions as Types,room 1,1,150
-"Using 'Program shaping' and algorithmic skeletons to parallelise an evolutionary multi-agent system in Erlang",Research Track,1,240
-Phoenix a web framework for the new web,room 2,1,240
-A brief history of programming languages,room 3,1,240
-Static analysis to identify divide-and-conquer algorithms,Research Track,1,265
-C preprocessor macros from functional programs,Research Track,1,295
-The Mysteries of Dropbox,room 2,1,295
-On Language Design,room 3,1,295
-Evolution of reactive streams API for context-aware mobile applications,Research Track,1,320
-Testing scalability of Erlang OpenFlow controller,Research Track,1,400
-A board game night with geeks,room 2,1,400
-History and philosophy of types,room 3,1,400
-Using an actor framework for scientific computing: opportunities and challenges,Research Track,1,425
-ACP and PGA: Two Algebraic Theories in Computer Science,Research Track,1,455
-Muvr,room 2,1,455
-Teaching functional programming to n00bs in mobs,room 3,1,455
-Making property-based testing easier to read for humans,Research Track,1,480
-Elixir and Elm - the perfect couple.,Research Track,1,510
-Taming Cloud Complexity with F# DSLs,room 2,1,510
-Reimagining Haskell,room 3,1,510
-Embracing change - how to introduce Clojure into your company technology stack seamlessly,Research Track,1,535
-Keynote: Things that Matter,room 1,2,120
-Modeling your domain. What have we learned? Where do we go from here?,room 1,2,210
-Elmrang Connect - Ultra Lightweight Connection between Elm and Erlang,room 2,2,210
-The Zen of Akka,room 3,2,210
-Creating reactive components using ClojureScript React wrappers,room 1,2,265
-The F#orce awakens,room 2,2,265
-Scala macros - swiss army knife for building libraries,room 3,2,265
-Getting started with Frege,room 1,2,370
-LFE - a lisp flavour on the Erlang VM,room 2,2,370
-Building Reactive Services Using Functional Programming,room 3,2,370
-Deriving The Documentation Of Your JSON Protocols,room 1,2,425
-Practical demystification of CRDT,room 2,2,425
-"Functional, reactive UI programming with JavaScript",room 3,2,425
-Purely Functional Web Apps,room 1,2,480
-Functional Reactive Programming for Natural User Interface,room 2,2,480
-Functional Reactive Rust,room 3,2,480
-Keynote: The Truth about Types,room 1,2,555
+"Refinement Reflection, or how to turn (Liquid) Haskell into a theorem prover",Research Track,1,320
+"A song of types and errors, or how I found myself leading teams of Scala developers",Room 2,2,210
+Elixir and money,Room 2,2,265
+Keynote: Build Good Software: Of Politics and Methods,Room 1,2,120
+Full Stack Type-safety: Elm with Scala,Room 1,1,400
+I can haz no Futures? ,Room 2,1,295
+Wireless Small Embedded Erlang Applications with Grisp Hardware Boards,Room 2,1,455
+Implementing Event-Driven Microservices Architecture using Functional programming,Research Track,1,480
+Keeping the flow going: Data-flow oriented workflow systems,Research Track,1,555
+Keynote: Why Functional Programming Matters,Research Track,1,150
+On the paradigm of functional programming ,Research Track,1,240
+Finding Functional Pearls: Detecting Recursion Schemes in Haskell Functions via Anti-Unification,Research Track,1,295
+Towards Augmenting Existing Procedural HPC Application Codes With Functional Programming Semantics,Research Track,1,455
+Building a security testing service with F#,Room 2,1,240
+Keynote: The Gap Between Diversity and Social Justice,Research Track,1,585
+Futhark: A High-Performance Purely Functional Array Language,Research Track,1,530
+Some History of Functional Programming Languages,Room 1,2,210
+Taming the Asynchronous Beast with CSP Channels in JavaScript,Room 3,2,265
+Practical Lambda Calculus,Room 2,2,370
+Testing with mutants,Room 3,2,425
+Smart Spreadsheets,Room 3,2,500
+Keynote: Embodied Interactions,Room 1,2,555
+Building the systems of tomorrow ,Room 3,2,210
+The Dramatic Consequences of the Open Source Revolution: Unrecognized Challenges & Some Modest Attempts at Solutions in Scala,Room 1,1,455
+Free the Conqueror! (Refactoring  divide-and-conquer functions),Research Track,1,425
+Using Clojurescript to launch iOS/Android apps to 1M users,Room 1,2,370
+Building a Graphical IDE in Elm/Purescript for an Embedded Language that Compiles to the Erlang VM,Room 2,2,425
+A Practical Introduction to Akka Streams,Room 2,2,500
+GenStage and Flow,Room 1,1,295
+Erlang-based Desynchronised Urban Traffic Simulation for High-Performance Computing Systems,Research Track,1,400
+Distributed Computing challenges in the gaming and betting industry,Room 2,1,530
+The Origins of Free,Room 1,2,265
+Fast Neural Networks… a no brainer!,Room 3,2,370
+"The Thrilling Adventures of Lovelace, Babbage and the Analytical Engine",Room 1,1,240
+Functional programming guerilla in the land of Rust,Room 1,1,530
+What Orwell's 1984 Can Teach Us about Programming,Room 2,1,400
+Going bananas with recursion schemes for fixed point data types,Room 1,2,425
+"That's My Monkey (A Functional, Reactive, Domain Driven Design, and Common Sense Approach To Architecture) ",Room 1,2,500
+Automatically Deriving Cost Models for Structured Parallel Processes Using Hylomorphisms,Research Track,1,265

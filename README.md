@@ -22,17 +22,33 @@
 Create the `config/sys.config` file with the following content:
 
 ```erlang
-[{etweet, [
+[
+  %% talks_tweeter options are optional, you have only to provide 'etweet'
+  %% options
+  {talks_tweeter, [
+    {action_interval, {0,1,0}}, %% check every 1 minute for talk
+    {time_window,     {0,5,0}}, %% time period which will be used for
+                                %% querying for talks. 'talks_tweeter' will
+                                %% check for talks within
+                                %% (now + before_talk, now + before_talk + time_window) minutes
+    {schedule_start_time, {{2016,2,18}, {6,0,0}}}, %% start time from which
+                                                   %% all talks has begin
+    {schedule_end_time, {{2016,2,19}, {18,0,0}}}, %% end time for all talks
+    {before_talk, {0,15,0}} %% tweet 15 minutes before talk
+  ]},
+  {etweet, [
            {screen_name, "TO_FILL"},
            {consumer_key, "TO_FILL"},
            {consumer_secret, "TO_FILL"},
            {access_token, "TO_FILL"},
            {access_token_secret, "TO_FILL"}
           ]
- }].
+  }].
 ```
 
 ## Building and Running ##
+
+> You need to have Erlang 18.3
 
 ```bash
 make compile
@@ -61,7 +77,7 @@ tt_importer:import_csv_file("talks.csv", {2016,02,04}).
 
 ```
 
-The `tt_importer` should be implemented as a `gen_server` plugged into the application supervision tree. The `tt_importer:import_file/1` function takes a file name as an argument and import its content into the database using its API (`tt_store:add/4`).
+The `tt_importer` is responsible for importing talks from file. The `tt_importer:import_file/1` function takes a file name as an argument and imports its content into the database using its API (`tt_store:add/4`).
 
 The file with the talks should have the following format:
 ```erlang
@@ -104,7 +120,7 @@ tt_store:find_by_time({{2015,12,17}, {17,00,00}}, {{2015,12,17}, {20,00,00}}) ->
 tt_store:list() -> [{TalkTitle, StartTime, EndTime, Where}]
 ```
 
-The `tt_store` module should be implemented as a `gen_server` plugged into the application supervision tree. The `tt_store:add/3` function is for adding new talks to the database. `tt_store:find_by_time/2` is for getting a list of talks that are planned to **start** in a given time range. The `tt_store:list/0` should return the list of all the talks in the store.
+The `tt_store` module is responsible for storing talks in ETS tables. The `tt_store:add/3` function is for adding new talks to the database. `tt_store:find_by_time/2` is for getting a list of talks that are planned to **start** in a given time range. The `tt_store:list/0` returns the list of all the talks in the store.
 
 ### Scheduling Publishing Talks ###
 
@@ -118,7 +134,7 @@ tt_scheduler:schedule({{2015, 12, 17}, {15, 00, 00}}, {{2015, 12, 17}, {20, 00, 
 tt_scheduler:cancel_schedule(Ref) -> ok.
 ```
 
-The `tt_scheduler` should be a `gen_server` plugged into the application supervision tree. It is intended for setting up scheduling of publishing information on talks. For example calling `tt_scheduler:schedule({{2015, 12, 17}, {15, 00, 00}}, {{2015, 12, 17}, {20, 00, 00}}, {00,20,00}).` should start a process that will check every hour what are the planned talks for the next hour and pass the result to the `tt_publisher`.
+The `tt_scheduler` is intended for setting up scheduling of publishing information on talks. For example calling `tt_scheduler:schedule({{2015, 12, 17}, {15, 00, 00}}, {{2015, 12, 17}, {20, 00, 00}}, {00,20,00}).` starts a process that will check every hour what are the planned talks for the next hour and pass the result to the `tt_publisher`.
 
 ### Publisher ###
 
@@ -133,13 +149,11 @@ tt_publisher:publish([
                      ) -> ok.
 ```
 
-`tt_publisher:publish/1` should publish on Twitter the talks. So the example invocation above should result in something like following in the Twitter account:
+`tt_publisher:publish/1` publishes the talks on Twitter. The example invocation above result in something like following in the Twitter account:
 
 > The plan for the following hour is:
 > * 17:00 - 17:30 "School of Erlang", ESL Office
 > * 17:30 - 18:00 "School of Elixir", ESL Office
-
-`tt_publisher` should run as a `gen_server` and be plugged into the application supervision tree.
 
 ## References ##
 
