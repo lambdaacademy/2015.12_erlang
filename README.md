@@ -77,7 +77,7 @@ tt_importer:import_csv_file("talks.csv", {2016,02,04}).
 
 ```
 
-The `tt_importer` is responsible for importing talks from file. The `tt_importer:import_file/1` function takes a file name as an argument and import its content into the database using its API (`tt_store:add/4`).
+The `tt_importer` is responsible for importing talks from file. The `tt_importer:import_file/1` function takes a file name as an argument and imports its content into the database using its API (`tt_store:add/4`).
 
 The file with the talks should have the following format:
 ```erlang
@@ -149,7 +149,7 @@ tt_publisher:publish([
                      ) -> ok.
 ```
 
-`tt_publisher:publish/1` publishes on Twitter the talks. So the example invocation above result in something like following in the Twitter account:
+`tt_publisher:publish/1` publishes the talks on Twitter. The example invocation above result in something like following in the Twitter account:
 
 > The plan for the following hour is:
 > * 17:00 - 17:30 "School of Erlang", ESL Office
