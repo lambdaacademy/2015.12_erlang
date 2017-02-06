@@ -58,6 +58,22 @@ make shell
 
 > The config/sys.config file has to be filled with appropriate values.
 
+## Running as a release ##
+
+> Ensure you have valid config/sys.config file
+
+```bash
+make rel
+cd _build/default/rel/talks_tweeter
+. /bin/talks_tweeter start #run application
+. /bin/talks_tweeter attach #attach to console
+```
+In console run:
+```erlang
+1> talks_tweeter_app:run().
+```
+and exit by pressing `Ctrl + D`.
+
 ## Architecture ##
 
 ![architecture](https://docs.google.com/drawings/d/1Tg9J9MGxVXwA0_3NdQ4FWo9yQ3XYL78aljEgNRK3Yu4/pub?w=960&h=720)
